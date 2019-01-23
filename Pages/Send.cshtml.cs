@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AspNetCoreSignalR.Hubs;
+using AspNetCoreSignalR.model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
@@ -18,7 +19,15 @@ namespace AspNetCoreSignalR.Pages
         }
         public async void OnGet(string user, string message)
         {
-            await _hub.Clients.All.SendAsync("ReceiveMessage", user, message);
+            // รับค่าเข้ามา 
+            var myMessage = new MyMessage
+            {
+                User = user,
+                Message = message
+            };
+
+            //-- ส่งไปให้ Client
+            await _hub.Clients.All.SendAsync("ReceiveMessage", myMessage);
         }
     }
 }

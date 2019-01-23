@@ -32,9 +32,9 @@
     // หน้าที่ทำการส่ง Send.cshtml.cs
     // /chathub มาจาก หน้า cofig หากเป็น angular ให้เป็น path แบบเต็ม https://www.???
     var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
-    connection.on("ReceiveMessage", function(user, message) {
-        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        var encodedMsg = user + " says " + msg;
+    connection.on("ReceiveMessage", function(myMessage) {
+        var msg = myMessage.message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var encodedMsg = myMessage.user + " says " + msg;
         var li = document.createElement("li");
         li.textContent = encodedMsg;
         document.getElementById("messagesList").appendChild(li);
@@ -46,6 +46,6 @@
     document.getElementById("sendButton").addEventListener("click", function(event) {
         var user = document.getElementById("userInput").value;
         var message = document.getElementById("messageInput").value;
-        connection.invoke("SendMessageToHub", user, message);
+        connection.invoke("SendMessageToHub", {"User": user, "Message": message});
     });
 </script>
