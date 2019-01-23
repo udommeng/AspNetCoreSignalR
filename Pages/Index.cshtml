@@ -7,9 +7,11 @@
         <div class="col-6">&nbsp;</div>
         <div class="col-6">
             User..........<input type="text" id="userInput" />
+            <div id="userdiv"></div>
             <br />
             Message...<input type="text" id="messageInput" />
             <input type="button" id="sendButton" value="Send Message" />
+            <div id="messagediv"></div>
         </div>
     </div>
     <div class="row">
@@ -31,16 +33,19 @@
     // /chathub มาจาก หน้า cofig หากเป็น angular ให้เป็น path แบบเต็ม https://www.???
     var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
     connection.on("ReceiveMessage", function(user, message) {
-        document.getElementById("userInput").value = user
-        document.getElementById("messageInput").value = message
+        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var encodedMsg = user + " says " + msg;
+        var li = document.createElement("li");
+        li.textContent = encodedMsg;
+        document.getElementById("messagesList").appendChild(li);
     });
     connection.start();
 
-    // -- ทำการส่งข้อความ
+    // -- ส่วนของการส่งข้อความ
+    // -- จาก Client ยิงเข้า Hub ก่อน จากนั้น Hub จะทำการยิงส่งให้ทุกเครื่อง
     document.getElementById("sendButton").addEventListener("click", function(event) {
         var user = document.getElementById("userInput").value;
         var message = document.getElementById("messageInput").value;
-
-        
+        connection.invoke("SendMessageToHub", user, message);
     });
 </script>
